@@ -46,8 +46,8 @@ public class DebitCardApplicationTest {
         $("[name=\"phone\"]").setValue("+790312345222222222222267");
         $(".checkbox__box").click();
         $("button").click();
-      
+
         $("#root > div > form > div:nth-child(2) > span > span > span.input__sub").shouldHave(exactText("Телефон указан неверно." +
-                " Должно быть 11 цифр, например, +79012345678." )).should(visible, Duration.ofSeconds(5));
+                " Должно быть 11 цифр, например, +79012345678.")).should(visible, Duration.ofSeconds(5));
     }
 }
