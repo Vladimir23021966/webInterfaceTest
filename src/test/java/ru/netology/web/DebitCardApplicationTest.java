@@ -1,6 +1,7 @@
 package ru.netology.web;
 
 
+import com.codeborne.selenide.Selenide;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -16,7 +17,7 @@ public class DebitCardApplicationTest {
     @Test
     void ShouldRightTest() {
 
-        open("http://localhost:9999");
+        Selenide.open("http://localhost:9999");
         $("[name=\"name\"]").setValue("Колянников Владимир");
         $("[name=\"phone\"]").setValue("+79031234567");
         $(".checkbox__box").click();
@@ -28,7 +29,7 @@ public class DebitCardApplicationTest {
 
     @Test
     void ShouldEnglishNameTest() {
-        open("http://localhost:9999");
+        Selenide.open("http://localhost:9999");
         $("[name=\"name\"]").setValue("Kolyannikov Vladimir");
         $("[name=\"phone\"]").setValue("+79031234567");
         $(".checkbox__box").click();
@@ -40,7 +41,7 @@ public class DebitCardApplicationTest {
     @Test
     void ShouldIncorrectTelTest() {
 
-        open("http://localhost:9999");
+        Selenide.open("http://localhost:9999");
         $("[name=\"name\"]").setValue("Колянников Владимир");
         $("[name=\"phone\"]").setValue("+790312345222222222222267");
         $(".checkbox__box").click();
