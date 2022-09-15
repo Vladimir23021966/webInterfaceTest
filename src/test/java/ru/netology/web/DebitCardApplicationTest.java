@@ -1,53 +1,82 @@
 package ru.netology.web;
 
-
 import com.codeborne.selenide.Selenide;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 
-import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.open;
 
 public class DebitCardApplicationTest {
 
+    @BeforeEach
+    public void setUp() {
+        Selenide.open("http://localhost:9999");
+    }
 
     @Test
-    void ShouldRightTest() {
+    void shouldВеSendingApplicationAfterEnteringValidValues() {
 
-        Selenide.open("http://localhost:9999");
-        $("[name=\"name\"]").setValue("Колянников Владимир");
-        $("[name=\"phone\"]").setValue("+79031234567");
-        $(".checkbox__box").click();
+        $("[data-test-id=\"name\"] [name=\"name\"]").setValue("Колянников Владимир");
+        $("[data-test-id=\"phone\"] [name=\"phone\"]").setValue("+79031234567");
+        $("[data-test-id=\"agreement\"]").click();
+        $("button").should(visible, Duration.ofSeconds(5)).click();
+        $("[data-test-id=\"order-success\"]").shouldHave(exactText("Ваша заявка успешно отправлена!" +
+                " Наш менеджер свяжется с вами в ближайшее время."));
+    }
+
+    @Test
+    void shouldВеNonSubmissionApplicationAfterEnteringInvalidName() {
+
+        $("[data-test-id=\"name\"] [name=\"name\"]").setValue("Kolyannikov Vladimir");
+        $("[data-test-id=\"phone\"] [name=\"phone\"]").setValue("+79031234567");
+        $("[data-test-id=\"agreement\"]").click();
         $("button").click();
-        $(".paragraph").shouldHave(exactText("Ваша заявка успешно отправлена!" +
-                " Наш менеджер свяжется с вами в ближайшее время.")).should(visible, Duration.ofSeconds(5));
+        $("[data-test-id=\"name\"] .input__inner .input__sub").shouldHave(exactText("Имя и Фамилия указаные неверно." +
+                " Допустимы только русские буквы, пробелы и дефисы."));
+    }
+
+    @Test
+    void shouldВеNonSubmissionApplicationAfterEnteringInvalidTel() {
+
+        $("[data-test-id=\"name\"] [name=\"name\"]").setValue("Колянников Владимир");
+        $("[data-test-id=\"phone\"] [name=\"phone\"]").setValue("+790312345222222222222267");
+        $("[data-test-id=\"agreement\"]").click();
+        $("button").click();
+        $("[data-test-id=\"phone\"] .input__inner .input__sub").shouldHave(exactText("Телефон указан неверно." +
+                " Должно быть 11 цифр, например, +79012345678."));
+    }
+
+    @Test
+    void shouldВеNonSubmissionApplicationAfterEnteringEmptyFieldTel() {
+
+        $("[data-test-id=\"name\"] [name=\"name\"]").setValue("Колянников Владимир");
+        $("[data-test-id=\"phone\"] [name=\"phone\"]").setValue("");
+        $("[data-test-id=\"agreement\"]").click();
+        $("button").click();
+        $("[data-test-id=\"phone\"] .input__inner .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
 
     }
 
     @Test
-    void ShouldEnglishNameTest() {
-        Selenide.open("http://localhost:9999");
-        $("[name=\"name\"]").setValue("Kolyannikov Vladimir");
-        $("[name=\"phone\"]").setValue("+79031234567");
-        $(".checkbox__box").click();
+    void shouldВеNonSubmissionApplicationAfterEnteringEmptyFieldName() {
+
+        $("[data-test-id=\"name\"] [name=\"name\"]").setValue("");
+        $("[data-test-id=\"phone\"] [name=\"phone\"]").setValue("+79031234567");
+        $("[data-test-id=\"agreement\"]").click();
         $("button").click();
-        $(".input__sub").shouldHave(exactText("Имя и Фамилия указаные неверно." +
-                " Допустимы только русские буквы, пробелы и дефисы.")).should(visible, Duration.ofSeconds(5));
+        $("[data-test-id=\"name\"] .input__inner .input__sub").shouldHave(exactText("Поле" +
+                " обязательно для заполнения"));
     }
 
     @Test
-    void ShouldIncorrectTelTest() {
+    void shouldВеNonSubmissionApplicationAfterEnteringEmptyСheckbox() {
 
-        Selenide.open("http://localhost:9999");
-        $("[name=\"name\"]").setValue("Колянников Владимир");
-        $("[name=\"phone\"]").setValue("+790312345222222222222267");
-        $(".checkbox__box").click();
+        $("[data-test-id=\"name\"] [name=\"name\"]").setValue("Колянников Владимир");
+        $("[data-test-id=\"phone\"] [name=\"phone\"]").setValue("+79031234567");
         $("button").click();
-
-        $("#root > div > form > div:nth-child(2) > span > span > span.input__sub").shouldHave(exactText("Телефон указан неверно." +
-                " Должно быть 11 цифр, например, +79012345678.")).should(visible, Duration.ofSeconds(5));
+        $("[data-test-id=\"order-success\"]").shouldBe(disappear, Duration.ofSeconds(5));
     }
 }
